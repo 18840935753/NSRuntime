@@ -11,6 +11,6 @@ NSArray *protocolNames = [[NSRuntime sharedRuntime] protocolNamesForClass:[UITab
 NSArray *propertyNames = [[NSRuntime sharedRuntime] propertyNamesForClass:[UITableViewController class] 
                                                          includeInherited:YES];
                                                          
-NSLog(@"\n%@ Protocols: %@", NSStringFromClass(classToInspect), protocolNames);
-NSLog(@"\n%@ Properties: %@", NSStringFromClass(classToInspect), propertyNames);
+NSLog(@"Protocols: %@" protocolNames);
+NSLog(@"Properties: %@", propertyNames);
 ```
