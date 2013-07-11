@@ -9,45 +9,17 @@
 #import "AppDelegate.h"
 #import "NSRuntime.h"
 
-@protocol Test1 <NSObject>
-
-@property (nonatomic) int x;
-
-@end
-
-@protocol Test2 <Test1>
-
-@property (nonatomic) int y;
-
-@end
-
-@interface TestObject : NSObject <Test1>
-
-@end
-
-@implementation TestObject
-
-@synthesize x;
-
-@end
-
-
-@interface TestObject2 : TestObject
-
-@end
-
-@implementation TestObject2
-
-@end
-
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    Class classToInspect = [UITableViewController class];
     
-    NSLog(@"%@", [[NSRuntime sharedRuntime] protocolNamesForClass:[TestObject2 class] includeInherited:YES]);
+    NSArray *protocolNames = [[NSRuntime sharedRuntime] protocolNamesForClass:classToInspect includeInherited:YES];
+    NSLog(@"\n%@ Protocols: %@", NSStringFromClass(classToInspect), protocolNames);
+    
+    NSArray *propertyNames = [[NSRuntime sharedRuntime] propertyNamesForClass:classToInspect includeInherited:YES];
+    NSLog(@"\n%@ Properties: %@", NSStringFromClass(classToInspect), propertyNames);
     
     return YES;
 }

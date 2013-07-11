@@ -37,13 +37,24 @@
     return sortedMethods;
 }
 
-- (NSArray *)propertyNamesForClass:(Class)aClass
+- (NSArray *)propertyNamesForClass:(Class)aClass includeInherited:(BOOL)shouldIncludeInherited;
 {
     NSMutableArray *names = [NSMutableArray array];
     uint propertyCount = 0;
     objc_property_t *properties = class_copyPropertyList(aClass, &propertyCount);
     for (uint i = 0; i < propertyCount; i++) {
         [names addObject:[NSString stringWithUTF8String:property_getName(properties[i])]];
+    }
+    
+    if (shouldIncludeInherited) {
+        Class superClass = aClass;
+        while ((superClass = class_getSuperclass(superClass))) {
+            uint superPropertyCount = 0;
+            objc_property_t *superProperties = class_copyPropertyList(superClass, &superPropertyCount);
+            for (uint i = 0; i < superPropertyCount; i++) {
+                [names addObject:[NSString stringWithUTF8String:property_getName(superProperties[i])]];
+            }
+        }
     }
     
     NSArray *sortedNames = [names sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
@@ -54,7 +65,7 @@
 {
     NSMutableArray *names = [NSMutableArray array];
     uint protocolCount = 0;
-    __unsafe_unretained Protocol **protocolArray = class_copyProtocolList([self class], &protocolCount);
+    __unsafe_unretained Protocol **protocolArray = class_copyProtocolList(aClass, &protocolCount);
     for (uint i = 0; i < protocolCount; i++) {
         [names addObject:NSStringFromProtocol(protocolArray[i])];
     }
@@ -62,10 +73,10 @@
     if (shouldIncludeInherited) {
         Class superClass = aClass;
         while ((superClass = class_getSuperclass(superClass))) {
-            protocolCount = 0;
-            __unsafe_unretained Protocol **protocolArray = class_copyProtocolList(superClass, &protocolCount);
-            for (uint j = 0; j < protocolCount; j++) {
-              [names addObject:NSStringFromProtocol(protocolArray[j])];
+            uint superProtocolCount = 0;
+            __unsafe_unretained Protocol **superProtocolArray = class_copyProtocolList(superClass, &superProtocolCount);
+            for (uint j = 0; j < superProtocolCount; j++) {
+              [names addObject:NSStringFromProtocol(superProtocolArray[j])];
             }
         }
     }
